@@ -16,10 +16,11 @@ func NewConfig(progName string, args []string) (*Config, error) {
 	config := Config{}
 	fs.IntVar(&config.ProducerCount, "producer-count", 0, "the number of producers")
 	fs.IntVar(&config.ConsumerCount, "consumer-count", 0, "the number of consumers")
-	fs.StringVar(&config.ImageLocation, "image-lcoation", "/images", "the file path to the images to process")
+	fs.StringVar(&config.ImageLocation, "image-location", "/images", "the file path to the images to process")
 
 	if err := fs.Parse(args); err != nil {
 		return nil, err
 	}
+
 	return &config, nil
 }
