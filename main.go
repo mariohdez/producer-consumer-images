@@ -9,6 +9,7 @@ import (
 	"os"
 	"playground/image/internal/input"
 	"playground/image/internal/processing"
+	"playground/image/internal/random"
 	"sync"
 	"time"
 )
@@ -38,7 +39,7 @@ func ProcessImages(ctx context.Context, args []string) error {
 
 	imgCh := make(chan image.Image, 10)
 	var wg sync.WaitGroup
-	ip := processing.New(&wg, imgCh, 1000, 1000)
+	ip := processing.New(&random.RealGenerator{}, &wg, imgCh, 1000, 1000)
 	for i := 0; i < cfg.ProducerCount; i++ {
 		wg.Add(1)
 		go func(wn int) {
