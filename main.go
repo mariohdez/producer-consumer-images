@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	err := ProcessImages(context.Background(), os.Args)
+	err := ProcessImages(context.Background(), os.Args, &random.RealGenerator{})
 	if err != nil {
 		slog.Error("processing image", "error", err)
 		os.Exit(1)
@@ -24,7 +24,7 @@ func main() {
 	os.Exit(0)
 }
 
-func ProcessImages(ctx context.Context, args []string) error {
+func ProcessImages(ctx context.Context, args []string, rg random.Generator) error {
 	if len(args) < 1 {
 		return errors.New("command line arguments length")
 	}
@@ -39,7 +39,7 @@ func ProcessImages(ctx context.Context, args []string) error {
 
 	imgCh := make(chan image.Image, 10)
 	var wg sync.WaitGroup
-	ip := processing.New(&random.RealGenerator{}, &wg, imgCh, 1000, 1000)
+	ip := processing.New(rg, &wg, imgCh, 1000, 1000)
 	for i := 0; i < cfg.ProducerCount; i++ {
 		wg.Add(1)
 		go func(wn int) {

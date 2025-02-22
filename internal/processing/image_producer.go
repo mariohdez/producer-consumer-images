@@ -40,16 +40,17 @@ func (p *Producer) Produce(ctx context.Context, wn int) {
 			slog.Info("stopping production due to cancellation", "workerNum", wn)
 			return
 		case p.imgCh <- img:
-			slog.Info("wrote val to ch", "val", img)
 		}
 	}
 }
 
-func (p *Producer) createImage() *image.RGBA64 {
-	img := image.NewRGBA64(image.Rectangle{
-		Min: image.Point{X: 0, Y: 0},
-		Max: image.Point{X: p.maxWidth, Y: p.maxHeight},
-	})
+func (p *Producer) createImage() *image.RGBA {
+	img := image.NewRGBA(
+		image.Rectangle{
+			Min: image.Point{X: 0, Y: 0},
+			Max: image.Point{X: p.maxWidth, Y: p.maxHeight},
+		},
+	)
 	for x := 0; x < p.maxWidth; x++ {
 		for y := 0; y < p.maxHeight; y++ {
 			img.SetRGBA64(x, y, color.RGBA64{
