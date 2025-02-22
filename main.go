@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -18,13 +19,14 @@ func main() {
 }
 
 func ProcessImage(args []string) error {
-	programName := os.Args[0]
-	argWithoutProgramName := os.Args[1:]
-	config, err := input.NewConfig(programName, argWithoutProgramName)
+	if len(args) < 1 {
+		return errors.New("command line arguments length")
+	}
+
+	_, err := input.NewConfig(os.Args[0], os.Args[1:])
 	if err != nil {
 		return fmt.Errorf("read command line arguments: %w", err)
 	}
 
-	fmt.Print(config.ConsumerCount)
 	return nil
 }
