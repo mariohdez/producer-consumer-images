@@ -37,3 +37,6 @@ go.work.sum
 .vscode/*
 
 images-to-process/*
+
+.DS_Store
+
