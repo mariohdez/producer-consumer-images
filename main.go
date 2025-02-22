@@ -31,16 +31,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	/*
-			f, err := os.Create("img.jpg")
-		if err != nil {
-		    panic(err)
-		}
-		defer f.Close()
-		if err = jpeg.Encode(f, target, nil); err != nil {
-		    log.Printf("failed to encode: %v", err)
-		}
-	*/
 	// err := ProcessImages(context.Background(), os.Args)
 	// if err != nil {
 	// 	slog.Error("processing image", "error", err)
