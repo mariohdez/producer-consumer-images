@@ -30,7 +30,7 @@ func ProcessImages(ctx context.Context, args []string, rg random.Generator) erro
 		return errors.New("command line arguments length")
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, time.Second*1)
+	ctx, cancel := context.WithTimeout(ctx, time.Millisecond*500)
 	defer cancel()
 
 	cfg, err := input.NewConfig(os.Args[0], os.Args[1:])

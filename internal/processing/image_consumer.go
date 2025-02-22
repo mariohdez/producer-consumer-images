@@ -56,14 +56,10 @@ func (cp *ConsumerPool) convertImgToGreyscale(img image.Image) {
 
 	for x := 0; x < rgbaImg.Bounds().Max.X; x++ {
 		for y := 0; y < rgbaImg.Bounds().Max.Y; y++ {
-			c := rgbaImg.At(x, y)
-			r, g, b, _ := c.RGBA()
-			gs := uint16(r + g + b/3)
-			rgbaImg.SetRGBA64(x, y, color.RGBA64{
-				R: gs,
-				G: gs,
-				B: gs,
-			})
+			// Found this algo for grayscale conversion https://en.wikipedia.org/wiki/Rec._709
+			r, g, b, _ := rgbaImg.At(x, y).RGBA()
+			gs := uint8(0.2126*float64(r>>8) + 0.7152*float64(g>>8) + 0.0722*float64(b>>8))
+			rgbaImg.SetRGBA(x, y, color.RGBA{R: gs, G: gs, B: gs, A: 255})
 		}
 	}
 }

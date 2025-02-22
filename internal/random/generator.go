@@ -3,7 +3,7 @@ package random
 import "math/rand"
 
 type Generator interface {
-	Generate(upperBound int32) uint16
+	Generate(upperBound int) uint8
 }
 
 var _ Generator = (*RealGenerator)(nil)
@@ -11,6 +11,6 @@ var _ Generator = (*RealGenerator)(nil)
 type RealGenerator struct {
 }
 
-func (r *RealGenerator) Generate(upperBound int32) uint16 {
-	return uint16(rand.Int31n(upperBound))
+func (r *RealGenerator) Generate(upperbound int) uint8 {
+	return uint8(rand.Intn(upperbound))
 }
