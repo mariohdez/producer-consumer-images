@@ -57,12 +57,13 @@ func createImage() *image.RGBA64 {
 		Max: image.Point{X: widthMax, Y: heightMax},
 	})
 
+	const randRangeBound = math.MaxUint16 + 1
 	for x := 0; x < widthMax; x++ {
 		for y := 0; y < heightMax; y++ {
 			img.SetRGBA64(x, y, color.RGBA64{
-				R: uint16(rand.Int31n(math.MaxUint16 + 1)),
-				G: uint16(rand.Int31n(math.MaxUint16 + 1)),
-				B: uint16(rand.Int31n(math.MaxUint16 + 1)),
+				R: uint16(rand.Int31n(randRangeBound)),
+				G: uint16(rand.Int31n(randRangeBound)),
+				B: uint16(rand.Int31n(randRangeBound)),
 			})
 		}
 	}
