@@ -13,22 +13,13 @@ type Config struct {
 func NewConfig(progName string, args []string) (*Config, error) {
 	fs := flag.NewFlagSet(progName, flag.ContinueOnError)
 
-	var pc int
-	fs.IntVar(&pc, "producer-count", 0, "the number of producers")
+	config := Config{}
+	fs.IntVar(&config.ProducerCount, "producer-count", 0, "the number of producers")
+	fs.IntVar(&config.ConsumerCount, "consumer-count", 0, "the number of consumers")
+	fs.StringVar(&config.ImageLocation, "image-lcoation", "/images", "the file path to the images to process")
 
-	var cc int
-	fs.IntVar(&cc, "consumer-count", 0, "the number of consumers")
-
-	var imageLocation string
-	fs.StringVar(&imageLocation, "image-lcoation", "/images", "the file path to the images to process")
-
-	if err := fs.Parse(args[1:]); err != nil {
+	if err := fs.Parse(args); err != nil {
 		return nil, err
 	}
-
-	return &Config{
-		ProducerCount: pc,
-		ConsumerCount: cc,
-		ImageLocation: imageLocation,
-	}, nil
+	return &config, nil
 }

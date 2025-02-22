@@ -10,7 +10,7 @@ import (
 func main() {
 	err := ProcessImage(os.Args)
 	if err != nil {
-		slog.Error("Error processing image", err)
+		slog.Error("processing image", "error", err)
 		os.Exit(1)
 	}
 
@@ -18,7 +18,9 @@ func main() {
 }
 
 func ProcessImage(args []string) error {
-	config, err := input.NewConfig(os.Args[0], os.Args[1:])
+	programName := os.Args[0]
+	argWithoutProgramName := os.Args[1:]
+	config, err := input.NewConfig(programName, argWithoutProgramName)
 	if err != nil {
 		return fmt.Errorf("read command line arguments: %w", err)
 	}
