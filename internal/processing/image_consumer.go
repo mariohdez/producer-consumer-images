@@ -67,7 +67,7 @@ func (cp *ConsumerPool) convertImgToGreyscale(img image.Image) {
 func (cp *ConsumerPool) saveImg(img image.Image) {
 	f, err := os.Create(cp.storagePath + cp.fileNameGenerator.Generate())
 	if err != nil {
-		// TODO: return error.=
+		// TODO: return error.
 	}
 	defer func() {
 		_ = f.Close()

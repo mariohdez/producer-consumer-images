@@ -54,15 +54,11 @@ func (p *Producer) createImage() *image.RGBA {
 	)
 	for x := 0; x < p.maxWidth; x++ {
 		for y := 0; y < p.maxHeight; y++ {
-			r := uint8(p.randGenerator.Generate(256))
-			g := uint8(p.randGenerator.Generate(256))
-			b := uint8(p.randGenerator.Generate(256))
-			a := uint8(255)
 			img.SetRGBA(x, y, color.RGBA{
-				R: r,
-				G: g,
-				B: b,
-				A: a,
+				R: uint8(p.randGenerator.Generate(256)),
+				G: uint8(p.randGenerator.Generate(256)),
+				B: uint8(p.randGenerator.Generate(256)),
+				A: uint8(255),
 			})
 		}
 	}

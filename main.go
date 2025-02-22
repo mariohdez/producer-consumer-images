@@ -38,7 +38,7 @@ func ProcessImages(ctx context.Context, args []string, rg random.Generator) erro
 		return fmt.Errorf("read command line arguments: %w", err)
 	}
 
-	imgCh := make(chan image.Image, 5)
+	imgCh := make(chan image.Image, cfg.BufferSize)
 	var producerWG sync.WaitGroup
 	ip := processing.New(rg, &producerWG, imgCh, 1000, 1000)
 	for i := 0; i < cfg.ProducerCount; i++ {
@@ -53,8 +53,7 @@ func ProcessImages(ctx context.Context, args []string, rg random.Generator) erro
 	}()
 
 	var consumerWG sync.WaitGroup
-	var fnGenerator = &filename.RealGenerator{}
-	ic := processing.NewConsumerPool(fnGenerator, &consumerWG, imgCh, cfg.ImageLocation)
+	ic := processing.NewConsumerPool(&filename.RealGenerator{}, &consumerWG, imgCh, cfg.ImageLocation)
 	for i := 0; i < cfg.ConsumerCount; i++ {
 		consumerWG.Add(1)
 		go ic.Consume(ctx)
