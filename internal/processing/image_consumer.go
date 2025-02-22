@@ -7,20 +7,23 @@ import (
 	"image/png"
 	"log/slog"
 	"os"
+	"playground/image/internal/filename"
 	"sync"
 )
 
 type ConsumerPool struct {
-	waitGroup   *sync.WaitGroup
-	imgCh       <-chan image.Image
-	storagePath string
+	fileNameGenerator filename.Generator
+	waitGroup         *sync.WaitGroup
+	imgCh             <-chan image.Image
+	storagePath       string
 }
 
-func NewConsumerPool(waitGroup *sync.WaitGroup, imgCh <-chan image.Image, storagePath string) *ConsumerPool {
+func NewConsumerPool(fnGenerator filename.Generator, waitGroup *sync.WaitGroup, imgCh <-chan image.Image, storagePath string) *ConsumerPool {
 	return &ConsumerPool{
-		waitGroup:   waitGroup,
-		imgCh:       imgCh,
-		storagePath: storagePath,
+		fileNameGenerator: fnGenerator,
+		waitGroup:         waitGroup,
+		imgCh:             imgCh,
+		storagePath:       storagePath,
 	}
 }
 
@@ -39,7 +42,7 @@ func (cp *ConsumerPool) Consume(ctx context.Context) {
 			}
 
 			cp.convertImgToGreyscale(img)
-			cp.SaveImg(img)
+			cp.saveImg(img)
 		}
 	}
 }
@@ -47,7 +50,7 @@ func (cp *ConsumerPool) Consume(ctx context.Context) {
 func (cp *ConsumerPool) convertImgToGreyscale(img image.Image) {
 	rgbaImg, ok := img.(*image.RGBA)
 	if !ok {
-		// TODO: return error
+		slog.Error("convert image.Image to image.RGBA")
 		return
 	}
 
@@ -65,8 +68,8 @@ func (cp *ConsumerPool) convertImgToGreyscale(img image.Image) {
 	}
 }
 
-func (cp *ConsumerPool) SaveImg(img image.Image) {
-	f, err := os.Create(cp.storagePath + "img0.jpn")
+func (cp *ConsumerPool) saveImg(img image.Image) {
+	f, err := os.Create(cp.storagePath + cp.fileNameGenerator.Generate())
 	if err != nil {
 		// TODO: return error.=
 	}

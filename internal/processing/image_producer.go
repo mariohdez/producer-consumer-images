@@ -40,6 +40,7 @@ func (p *Producer) Produce(ctx context.Context, wn int) {
 			slog.Info("stopping production due to cancellation", "workerNum", wn)
 			return
 		case p.imgCh <- img:
+			slog.Info("produced image", "workerNum", wn)
 		}
 	}
 }

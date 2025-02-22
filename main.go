@@ -7,6 +7,7 @@ import (
 	"image"
 	"log/slog"
 	"os"
+	"playground/image/internal/filename"
 	"playground/image/internal/input"
 	"playground/image/internal/processing"
 	"playground/image/internal/random"
@@ -37,41 +38,28 @@ func ProcessImages(ctx context.Context, args []string, rg random.Generator) erro
 		return fmt.Errorf("read command line arguments: %w", err)
 	}
 
-	imgCh := make(chan image.Image, 10)
-	var wg sync.WaitGroup
-	ip := processing.New(rg, &wg, imgCh, 1000, 1000)
+	imgCh := make(chan image.Image, 5)
+	var producerWG sync.WaitGroup
+	ip := processing.New(rg, &producerWG, imgCh, 1000, 1000)
 	for i := 0; i < cfg.ProducerCount; i++ {
-		wg.Add(1)
+		producerWG.Add(1)
 		go func(wn int) {
 			ip.Produce(ctx, wn)
 		}(i)
 	}
+	go func() {
+		producerWG.Wait()
+		close(imgCh)
+	}()
 
-	wg.Add(1)
-	go Consumer(ctx, &wg, imgCh)
-
-	wg.Wait()
-
-	close(imgCh)
+	var consumerWG sync.WaitGroup
+	var fnGenerator = &filename.RealGenerator{}
+	ic := processing.NewConsumerPool(fnGenerator, &consumerWG, imgCh, cfg.ImageLocation)
+	for i := 0; i < cfg.ConsumerCount; i++ {
+		consumerWG.Add(1)
+		go ic.Consume(ctx)
+	}
+	consumerWG.Wait()
 
 	return nil
-}
-
-func Consumer(ctx context.Context, wg *sync.WaitGroup, imgCh <-chan image.Image) {
-	defer wg.Done()
-
-	for {
-		select {
-		case <-ctx.Done():
-			slog.Info("stopping consumption due to cancellation")
-			return
-		case item, ok := <-imgCh:
-			if !ok {
-				fmt.Printf("ch closed...")
-				return
-			}
-			slog.Info("read item", "item", item)
-			time.Sleep(time.Millisecond * 100)
-		}
-	}
 }
